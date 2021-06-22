@@ -4,19 +4,16 @@
 #include "http/include/HttpServer.h"
 #include "modules/Modules.h"
 
-#include "net/include/Ping.h"
-#include "log/include/Log.h"
-#include <unordered_map>
 using namespace std;
 
-Mutex mutex;
-static std::unordered_map<string, string> resourceManager;
-
-void handleHello(const shared_ptr<Http>& request, const shared_ptr<Http>& response) {
+void handleHello(shared_ptr<Http> request, shared_ptr<Http> response) {
     std::ifstream file("../resources/bXKvL1.jpg");
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    response->data = buffer.str();
+    file.seekg(0, file.end);
+    int length = file.tellg();
+    file.seekg(0, file.beg);
+    response->data.resize(length);
+    file.read(response->data.data(), length);
+    file.close();
 }
 
 int main() {
